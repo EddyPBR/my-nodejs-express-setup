@@ -149,3 +149,93 @@ But we don't stop there, we still need to add the package that allows the typesc
 ```
   yarn add tsconfig-paths -D
 ```
+
+<br />
+
+## EXPRESS BASE STRUCTURE
+
+- Install express:
+```
+  yarn add express
+```
+
+- Install the types of express in development dependencies:
+```
+  yarn add @types/express -D
+```
+
+- Create a `src` folder in the root directory of the project;
+
+- In `src` folder create a `controllers` folder;
+
+- Now let's create a controller, In `controllers` folder create a file called `HelloWorldController.ts` and copy the following code snippet:
+```
+  import { Request, Response } from "express";
+
+  class HelloWorldController {
+    index(request: Request, response: Response) {
+      return response.status(200).json({ message: "Hello world!" });
+    }
+  }
+
+  export { HelloWorldController };
+
+```
+
+- Inside the `src` folder, create the following files `app.ts`, `server.ts`, `routes.ts`;
+
+- In `routes.ts` file, copy the following code snippet:
+```
+  import { Router } from "express";
+
+  import { HelloWorldController } from "@controllers/HelloWorldController";
+
+  const helloWorld = new HelloWorldController();
+
+  const router = Router();
+
+  router.get("/", helloWorld.index);
+
+  export { router };
+
+```
+
+- In `app.ts` file, copy the following code snippet:
+```
+  import express from "express";
+  import { router } from "./routes";
+
+  const app = express();
+
+  app.use(express.json());
+
+  app.use(router);
+  export { app };
+
+```
+
+- Finnaly in `index.ts` copy the following code snippet:
+```
+  import { app } from "./app";
+
+  const PORT = 3000;
+
+  app.listen(PORT, () => console.log(`SERVER LISTEN AT ${PORT}`));
+
+```
+
+Now let's configure a script to run the project as development mode, for that we'll use the ts-node-dev package, install it with the following command:
+```
+  yarn add ts-node-dev -D
+```
+
+Now lets create a script to start the project in development mode, in the `package.json` create a new atribute like the following:
+```
+  "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --files --ignore-watch node_modules --no-notify src/index.ts"
+  }
+```
+
+So execute in your terminal the command `yarn dev`, and our service is online! We can test it just open your browser and the url `localhost:3000/`, and it should return a json like `{ message: hello world }`.
+
+<br />
