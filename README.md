@@ -39,7 +39,6 @@ Let's remove unnecessary git changes. To do this, create a `.gitignore` file in 
   npm-debug.log*
   yarn-debug.log*
   yarn-error.log*
-
 ```
 
 <br />
@@ -179,7 +178,6 @@ But we don't stop there, we still need to add the package that allows the typesc
   }
 
   export { HelloWorldController };
-
 ```
 
 - Inside the `src` folder, create the following files `app.ts`, `server.ts`, `routes.ts`;
@@ -197,7 +195,6 @@ But we don't stop there, we still need to add the package that allows the typesc
   router.get("/", helloWorld.index);
 
   export { router };
-
 ```
 
 - In `app.ts` file, copy the following code snippet:
@@ -211,7 +208,6 @@ But we don't stop there, we still need to add the package that allows the typesc
 
   app.use(router);
   export { app };
-
 ```
 
 - Finnaly in `index.ts` copy the following code snippet:
@@ -221,7 +217,6 @@ But we don't stop there, we still need to add the package that allows the typesc
   const PORT = 3000;
 
   app.listen(PORT, () => console.log(`SERVER LISTEN AT ${PORT}`));
-
 ```
 
 Now let's configure a script to run the project as development mode, for that we'll use the ts-node-dev package, install it with the following command:
@@ -236,6 +231,63 @@ Now lets create a script to start the project in development mode, in the `packa
   }
 ```
 
-So execute in your terminal the command `yarn dev`, and our service is online! We can test it just open your browser and the url `localhost:3000/`, and it should return a json like `{ message: hello world }`.
+So execute in your terminal the command `yarn dev`, and our service is online! We can test it just open your browser and load a page in the url `localhost:3000/`, it should return a json like `{ message: hello world }`.
+
+<br />
+
+## SCRIPT TO BUILD AND START
+
+In this topic we are going to configure our project to generate the build with the babel package.
+
+- First we must install babel and some extra packages of it, just copy the following code:
+```
+  yarn add babel-plugin-module-resolver @babel/preset-typescript @babel/preset-env @babel/node @babel/core @babel/cli -D
+```
+
+- Now let's create a babel configuration file:
+```
+  {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "@babel/preset-typescript"
+    ],
+    "plugins": [
+      [
+        "module-resolver",
+        {
+          "alias": {
+            "@controllers": "./src/controllers",
+            "@models": "./src/models",
+            "@utils": "./src/utils",
+            "@middlewares": "./src/middlewares",
+            "@database": "./src/database"
+          }
+        }
+      ]
+    ],
+    "ignore": ["**/*.spec.ts"]
+  }
+```
+
+Now lets create scripts to generate the build of the project, and start it. On package.json in the `scripts` atribute adding the following code:
+```
+  "scripts": {
+    "build": "babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored",
+    "start": "node ./dist/index.js",
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --files --ignore-watch node_modules --no-notify src/index.ts"
+  },
+```
+
+Well now we have three scripts:
+- `yarn dev` to run the project in development mode;
+- `yarn build` to build the project build;
+- `yarn start` to run the project build;
 
 <br />
