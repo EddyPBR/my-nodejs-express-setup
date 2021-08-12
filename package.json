@@ -1,0 +1,11 @@
+{
+  "name": "my-nodejs-express-setup",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/EddyPBR/my-nodejs-express-setup.git",
+  "author": "EddyPBR <edvaldojunior1310@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.3.5"
+  }
+}
