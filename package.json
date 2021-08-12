@@ -5,8 +5,16 @@
   "repository": "https://github.com/EddyPBR/my-nodejs-express-setup.git",
   "author": "EddyPBR <edvaldojunior1310@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --respawn --transpile-only --files --ignore-watch node_modules --no-notify src/index.ts"
+  },
   "devDependencies": {
+    "@types/express": "^4.17.13",
+    "ts-node-dev": "^1.1.8",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }
