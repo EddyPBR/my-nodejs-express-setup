@@ -1,0 +1,28 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    [
+      "module-resolver",
+      {
+        "alias": {
+          "@controllers": "./src/controllers",
+          "@models": "./src/models",
+          "@utils": "./src/utils",
+          "@middlewares": "./src/middlewares",
+          "@database": "./src/database"
+        }
+      }
+    ]
+  ],
+  "ignore": ["**/*.spec.ts"]
+}
