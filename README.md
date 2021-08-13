@@ -55,7 +55,7 @@ In the `tsconfig.json` file, set the following configurations:
 
     /* Basic Options */
     // "incremental": true,                         /* Enable incremental compilation */
-  "target": "es2017",                               /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */
+  "target": "ES2021",                               /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */
     "module": "commonjs",                           /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
     // "lib": [],                                   /* Specify library files to be included in the compilation. */
     "allowJs": true,                                /* Allow javascript files to be compiled. */
@@ -325,5 +325,114 @@ app.listen(PORT, () => console.log(`SERVER LISTEN AT ${PORT}`));
 ```
 
 Explanation: in the copied code snippet, we first import the `dotenv` (.env) file, and then we create a const `PORT` which is taken from the `process.env` its content is precisely the `.env` file found at the root of the project.
+
+<br />
+
+## ESLINT AND PRETTIER
+
+In projects, we must maintain the same code structure pattern, in order to improve the understanding of the team and facilitate changes and the like.
+
+For this we will use eslint and prettier they will be responsible for forcing us to follow a certain code pattern such as using a semicolon at the end of the code sentence and double quotes and among other things. So, let's start:
+
+- Install the follwing packages:
+```
+yarn add eslint prettier eslint-config-prettier eslint-plugin-prettier eslint-plugin-import @typescript-eslint/parser @typescript-eslint/eslint-plugin -D
+```
+
+- Execute the command:
+```
+yarn eslint --initialization
+```
+
+Now we need response some questions to create our own pattern. Here I will demonstrate the answers to the way this project is found:
+- How would you like to use ESlint? `To check syntax, find problems, and enforce code style`;
+- What type of modules does your project use? `JavaScript modules (import/export)`;
+- Which framework does your project use? `None of these`;
+- Does your project use Typescript? `Yes`;
+- Where does your code run? `Node` (to mark the options use Spacebar);
+- How would you like to define a style for your project? `Answer questions about your style`;
+- What format do you want your config file to be in? `JSON`;
+- What style of identation you use? `Tabs`;
+- What quotes do you use for strings? `Double`;
+- What line endings do you use? `Unix`;
+- Do you require semicolons? `Yes`;
+
+Finished it, the npm will download a series of packages even if you use `yarn`, just wait install the all packages and do the following:
+- Delete `package-lock.json` file;
+- Delete `node_modules` folder;
+- In your command interface execute the command:
+```
+  yarn
+```
+
+Now we need finish the configuration of Eslint and Prettier, just follow the steps:
+- In `.eslintrc` file copy the following code snippet:
+```
+  {
+    "env": {
+      "es2021": true,
+      "node": true
+    },
+    "extends": [
+      "airbnb-base",
+      "prettier"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+      "ecmaVersion": 14,
+      "sourceType": "module"
+    },
+    "plugins": [
+      "@typescript-eslint",
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        1,
+        {
+          "trailingComma": "es5",
+          "singleQuote": false,
+          "semi": true
+        }
+      ],
+      "no-console": 0
+    }
+  }
+```
+
+- On the root folder create a file `.prettierrc.json` and copy the follwing code snippet:
+```
+  {
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": false,
+    "trailingComma": "es5"
+  }
+```
+
+- Now let's create a `.eslintignore` to don't apply the rules in some files:
+```
+  **/node_modules/*
+  **/out/*
+  **/dist/*
+  tsconfig.json
+  package.json
+```
+
+- Now lest do the same thing with the prettier, create a `.prettierignore` file and copy the following:
+```
+  node_modules
+  dist
+  yarn.lock
+  package-lock.json
+  public
+```
+
+- To finisg this topic, lets create a script to linting our files. In `package.json` file in the `scripts` atribute put this code:
+```
+  "lint": "eslint --fix --ext .js,.ts,.json ."
+```
+
+All is configured, so... execute in your terminal the command `yarn lint` and see the magic!
 
 <br />
