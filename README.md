@@ -276,6 +276,8 @@ In this topic we are going to configure our project to generate the build with t
   }
 ```
 
+`PS: For each decorator added to the tsconfig.json file, it is necessary to add it to the babel settings, so that no errors are detected in the build process.`
+
 Now lets create scripts to generate the build of the project, and start it. On package.json in the `scripts` atribute adding the following code:
 ```
   "scripts": {
@@ -289,5 +291,39 @@ Well now we have three scripts:
 - `yarn dev` to run the project in development mode;
 - `yarn build` to build the project build;
 - `yarn start` to run the project build;
+
+<br />
+
+## DOTENV (AMBIENT VARS)
+
+Sometimes we need to define certain variables in certain environments. You ask yourself, "What do you mean? What environments?" - Project environments, for example the test environment and the production environment.
+
+Usually the variables like ports, url, database url, database user, database pass and so on. They are changed depending on the environment.
+
+In this topic we will configure the environment variables of our project so that we can use the environment variables in all project files.
+
+No more, let's start:
+
+- First install the following package:
+```
+yarn add dotenv -D
+```
+
+- Now create a `.env` file in the project root;
+
+- In it you must put the environment variables of your project, but in this case put only one, the value `PORT=3000`;
+
+- Now inside the `index.ts` file copy and paste the following code snippet:
+```
+import "dotenv/config";
+
+import { app } from "./app";
+
+const { PORT } = process.env;
+
+app.listen(PORT, () => console.log(`SERVER LISTEN AT ${PORT}`));
+```
+
+Explanation: in the copied code snippet, we first import the `dotenv` (.env) file, and then we create a const `PORT` which is taken from the `process.env` its content is precisely the `.env` file found at the root of the project.
 
 <br />
