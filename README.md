@@ -472,8 +472,8 @@ Well let's get started, First let's install commitlint:
 
 With commitlint installed, create a file called `.commitlintrc` and add the following code snippet:
 ```
-  module.exports = {
-    extends: ['@commitlint/config-conventional']
+  {
+    extends: ["@commitlint/config-conventional"]
   }
 ```
 
