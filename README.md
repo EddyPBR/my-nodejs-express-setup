@@ -436,3 +436,21 @@ Now we need finish the configuration of Eslint and Prettier, just follow the ste
 All is configured, so... execute in your terminal the command `yarn lint` and see the magic!
 
 <br />
+
+## EDITOR CONFIG
+
+Editor config is used to maintain a certain pattern of indentation, charset and other text editing settings, just create a `.editorconfig` file and copy and paste the following code snippet:
+
+```
+  root = true
+
+  [*]
+  indent_style = tab
+  indent_size = 2
+  charset = utf-8
+  end_of_line = lf
+  trim_trailing_whitespace = true
+  insert_final_newline = true
+```
+
+<br />
