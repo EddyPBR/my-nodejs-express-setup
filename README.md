@@ -113,6 +113,9 @@ In the `tsconfig.json` file, set the following configurations:
       "@database/*": [
         "./src/database/*"
       ],
+      "@exceptions/*": [
+        "./src/exceptions/*"
+      ]
     },                                              /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
     // "rootDirs": [],                              /* List of root folders whose combined content represents the structure of the project at runtime. */
     "typeRoots": [
@@ -267,7 +270,8 @@ In this topic we are going to configure our project to generate the build with t
             "@models": "./src/models",
             "@utils": "./src/utils",
             "@middlewares": "./src/middlewares",
-            "@database": "./src/database"
+            "@database": "./src/database",
+            "@exceptions": "./src/exceptions"
           }
         }
       ]
@@ -514,3 +518,141 @@ For this we will use commitizen. Open your command interface and run the followi
 ```
   npx husky add .husky/prepare-commit-msg "exec < /dev/tty && git cz --hook || true"
 ```
+
+<br />
+
+## ERROR HANDLING
+
+The handling of errors in the system is something trivial, we don't want our application to simply stop because of errors, and we also want to be aware of the errors we receive.
+
+In this topic, I will teach you how to generate an error handler so that your application does not crash and return error messages to users correctly.
+
+- First in `src` folder create a new folder called `exceptions`;
+- In exceptions folder create a file called `ApplicationException.ts`;
+- Into file `ApplicationException.ts` copy the following code snippet:
+```
+export class ApplicationException {
+  constructor(
+    public readonly message: string,
+    public readonly statusCode: number
+  ) {}
+}
+```
+
+It will be our object to generate errors, this object receives a message and a code (the http error code).
+
+PS: If you are using decorators, don't forget to create a new one to `exceptions` folder.
+
+Now we need to create a new file to trigger the errors returning them as an http response, just follow the steps.
+
+- Inside the `src` directory create a folder called `middlewares`;
+- In middlewares folder create a file called `ErrorHandling.ts`;
+- Inside the file put the following code snippet:
+```
+import type { Request, Response, NextFunction } from "express";
+import { ApplicationException } from "@exceptions/ApplicationException";
+
+export function ErrorHandling (
+  err: Error,
+  request: Request,
+  response: Response,
+  next: NextFunction
+) {
+  if (err instanceof ApplicationException) {
+    return response.status(err.statusCode).json({ message: err.message });
+  }
+
+  return response.status(500).json({
+    message: "Internal server error",
+  });
+}
+```
+
+Let me explain the code above it runs when the user makes a request and we get an error. This error is received by this function and it checks if it is an error of type `ApplicationException` (which would be an error expected by us).
+
+If it is an `ApplicationException` error we will have already informed the `http code` of the error and also the error message, but if not we will have an `internal server error` which is a generic and unexpected error by us.
+
+Now let's enable errors in our project, follow these steps:
+
+- First install the following package:
+```
+yarn add express-async-errors
+```
+
+- In the file `app.ts` import the `ErrorHandling` and enable it in app.use(ErrorHandling), or you can copy the following code:
+```
+import express from "express";
+import "express-async-errors";
+import { ErrorHandling } from "@middlewares/ErrorHandling";
+
+import { router } from "./routes";
+
+const app = express();
+
+app.use(express.json());
+
+app.use(router);
+
+app.use(ErrorHandling);
+
+export { app };
+```
+
+Well we need test the errors... for this just following the steps below:
+
+- In `controllers` folder create a new file called `ErrorHandlerController.ts`;
+- Copy and paste the following code snippet:
+```
+import { Request, Response } from "express";
+import { ApplicationException } from "@exceptions/ApplicationException";
+
+class ErrorHandlerController {
+	index(request: Request, response: Response) {
+    //dont.exist = "error!"; // throw a unexpected error!
+
+		return response.status(200).json({ message: "Error handler controller okay" });
+	}
+
+  create(request: Request, response: Response) {
+    const { name, age }: { name: string, age: number } = request.body;
+  
+    const registeredNames = [
+      "eddypbr",
+      "edvaldo"
+    ];
+  
+    if(registeredNames.includes(name)) {
+      throw new ApplicationException("Name already registered", 400);
+    }
+  
+    return response.status(202).json({ name, age });
+  }
+}
+
+export { ErrorHandlerController };
+```
+
+- Uncomment the line in `index`;
+- In `routes.ts` file import the new controller, instance it, and create two routes for use the methods of the controller, or copy the following code snippet:
+```
+import { Router } from "express";
+
+import { HelloWorldController } from "@controllers/HelloWorldController";
+import { ErrorHandlerController } from "@controllers/ErrorHandlerController";
+
+const helloWorld = new HelloWorldController();
+const errorHandler = new ErrorHandlerController();
+
+const router = Router();
+
+router.get("/", helloWorld.index);
+
+router.get("/error", errorHandler.index);
+router.post("/error", errorHandler.create);
+
+export { router };
+```
+
+- Now try to make a request (GET and POST) to `/error` route;
+
+<br />
