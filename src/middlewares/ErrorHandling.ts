@@ -1,17 +1,27 @@
 import type { Request, Response, NextFunction } from "express";
+import { isCelebrateError } from "celebrate";
 import { ApplicationException } from "@exceptions/ApplicationException";
 
 export function ErrorHandling (
-	err: Error,
+	error: Error,
 	request: Request,
 	response: Response,
 	next: NextFunction
 ) {
-	if (err instanceof ApplicationException) {
-		return response.status(err.statusCode).json({ message: err.message });
+	if(isCelebrateError(error)) {
+		const errorDetails = error.details.get("body").details;
+		const errorMessages = errorDetails.map((errorDetail) => errorDetail.message.replace(/"/g, ""));
+
+		return response.status(500).json({
+			message: errorMessages,
+		});
+	}
+
+	if (error instanceof ApplicationException) {
+		return response.status(error.statusCode).json({ message: error.message });
 	}
 
 	return response.status(500).json({
-		message: `Internal server error - ${err.message}`,
+		message: `Internal server error - ${error.message}`,
 	});
 }
