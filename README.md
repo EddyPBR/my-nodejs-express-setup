@@ -656,3 +656,92 @@ export { router };
 - Now try to make a request (GET and POST) to `/error` route;
 
 <br />
+
+## ERROR HANDLING WITH CELEBRATE + JOI
+
+In the previous topic it was shown how to throw system errors and return them as json and assign an http code for each error.
+
+In this topic we are going to use `celebrate & Joi` (celebrate package uses Joi to data treatment) a package that will help us handle the data and throw errors to the system.
+
+so let's start:
+
+- Add the celebrate package:
+```
+yarn add celebrate
+```
+
+- On the `routes.ts` file copy the following code has example:
+```
+import { Router } from "express";
+import { celebrate, Joi, Segments } from "celebrate";
+
+import { HelloWorldController } from "@controllers/HelloWorldController";
+import { ErrorHandlerController } from "@controllers/ErrorHandlerController";
+
+const helloWorld = new HelloWorldController();
+const errorHandler = new ErrorHandlerController();
+
+const router = Router();
+
+router.get("/", helloWorld.index);
+
+router.get("/error", errorHandler.index);
+router.post("/error", celebrate({
+  [Segments.BODY]: Joi.object().keys({
+    name: Joi.string().required(),
+    age: Joi.number().integer().required().min(18),
+  }),
+}, { abortEarly: false }),  errorHandler.create);
+
+export { router };
+```
+
+In the code above, we import celebrate and use its data handling functions. I'm gonna explain:
+
+- In the `name` field we said that it is a required field and that it is a string type;
+
+- In the `age` field we said that it is a mandatory numeric type field of the integer type (cannot be fractional or decimal) and that it has to be greater then 18;
+
+PS: There are several types of error handling with Joi and celebrate, go to [this link]("https://joi.dev/api/") and learn more.
+
+If in any of these cases the data is not satisfied, celebrate will trigger an error, which will be caught by our error middleware created in the previous topic. However the errors will be returned in a generic way, so let's specify the fields that gave an error when we go back to the user.
+
+This process is very simple:
+
+- In the `middlewares` folder in the `ErrorHandling.ts` file copy and paste the following code snippet:
+```
+import type { Request, Response, NextFunction } from "express";
+import { isCelebrateError } from "celebrate";
+import { ApplicationException } from "@exceptions/ApplicationException";
+
+export function ErrorHandling (
+	err: Error,
+	request: Request,
+	response: Response,
+	next: NextFunction
+) {
+	if(isCelebrateError(err)) {
+    const errorDetails = err.details.get("body").details;
+    const errorMessages = errorDetails.map((error) => error.message.replace(/"/g, ""));
+
+    return response.status(500).json({
+      message: errorMessages,
+    });
+  }
+
+	if (err instanceof ApplicationException) {
+		return response.status(err.statusCode).json({ message: err.message });
+	}
+
+	return response.status(500).json({
+		message: `Internal server error - ${err.message}`,
+	});
+}
+```
+Basically we import a celebrate function that checks if the triggered error is an error coming from the celebrate. Then we create a conditional that uses this function does a text treatment and returns an http message with a json that reports the errors found.
+
+Now you can test it, changing the age value to less than 18 or chaginf name field to a number type... enjoy!
+
+PS: In the routes file the `abortEarly` option is used so that as soon as it finds an error it triggers the error, if the option is `false` the celebrate will save the errors and then trigger them all as a single error.
+
+<br />
