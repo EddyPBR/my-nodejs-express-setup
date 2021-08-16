@@ -5,7 +5,7 @@ class ErrorHandlerController {
 	index(request: Request, response: Response) {
 		//dont.exist = "error!"; // throw a unexpected error!
 
-		return response.status(200).json({ message: "Error handler controller okay" });
+		return response.status(200).json({ message: "Tudo certo por aqui" });
 	}
 
 	create(request: Request, response: Response) {
@@ -17,7 +17,7 @@ class ErrorHandlerController {
 		];
   
 		if(registeredNames.includes(name)) {
-			throw new ApplicationException("Name already registered", 400);
+			throw new ApplicationException("Nome já está cadastrado", 400);
 		}
   
 		return response.status(202).json({ name, age });

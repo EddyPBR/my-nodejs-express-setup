@@ -3365,6 +3365,11 @@ isobject@^3.0.0, isobject@^3.0.1:
   resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
   integrity sha1-TkMekrEalzFjaqH5yNHMvP2reN8=
 
+joi-translation-pt-br@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/joi-translation-pt-br/-/joi-translation-pt-br-0.0.2.tgz#b7f7fd141bebee04170c75330cbe585cb81b4759"
+  integrity sha512-hLnKe0eLNi2cMiANcs0OuLaQ1zp2dya5xRZju8pEmJDpdIxqK/h8jWIxHMiCrgf5erRddgKC2nuyDDJCjERD3Q==
+
 joi@17.x.x:
   version "17.4.2"
   resolved "https://registry.yarnpkg.com/joi/-/joi-17.4.2.tgz#02f4eb5cf88e515e614830239379dcbbe28ce7f7"

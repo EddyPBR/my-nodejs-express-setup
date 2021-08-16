@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { celebrate, Joi, Segments } from "celebrate";
+import { messages } from "joi-translation-pt-br";
 
 import { HelloWorldController } from "@controllers/HelloWorldController";
 import { ErrorHandlerController } from "@controllers/ErrorHandlerController";
@@ -17,6 +18,6 @@ router.post("/error", celebrate({
 		name: Joi.string().required(),
 		age: Joi.number().integer().required().min(18),
 	}),
-}, { abortEarly: true }),  errorHandler.create);
+}, { abortEarly: true, messages }),  errorHandler.create);
 
 export { router };
