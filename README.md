@@ -720,21 +720,21 @@ export function ErrorHandling (
 	response: Response,
 	next: NextFunction
 ) {
-	if(isCelebrateError(err)) {
-    const errorDetails = err.details.get("body").details;
-    const errorMessages = errorDetails.map((error) => error.message.replace(/"/g, ""));
+	if(isCelebrateError(error)) {
+    const errorDetails = error.details.get("body").details;
+    const errorMessages = errorDetails.map((errorDetail) => errorDetail.message.replace(/"/g, ""));
 
     return response.status(500).json({
       message: errorMessages,
     });
   }
 
-	if (err instanceof ApplicationException) {
-		return response.status(err.statusCode).json({ message: err.message });
+	if (error instanceof ApplicationException) {
+		return response.status(error.statusCode).json({ message: error.message });
 	}
 
 	return response.status(500).json({
-		message: `Internal server error - ${err.message}`,
+		message: `Internal server error - ${error.message}`,
 	});
 }
 ```
@@ -743,5 +743,54 @@ Basically we import a celebrate function that checks if the triggered error is a
 Now you can test it, changing the age value to less than 18 or chaginf name field to a number type... enjoy!
 
 PS: In the routes file the `abortEarly` option is used so that as soon as it finds an error it triggers the error, if the option is `false` the celebrate will save the errors and then trigger them all as a single error.
+
+<br />
+
+## TRADUÇÃO DO JOI EM PT-BR
+
+Fala dev! achou que ia ficar de fora com os erros brasileiros? - errou!
+
+Eu sei muito bem que tem cliente que quer os erros em português, e estamos aqui pra ajudar uns aos outros não é mesmo? - Então, tem uma galera que traduziu os erros do JOI, e vamos utilizar o pacote que eles criaram para traduzir os nossos erros.
+
+- Então vamos lá, instale o seguinte pacote:
+```
+yarn add joi-translation-pt-br
+```
+
+- Na pasta `src` no arquivo `routes.ts` importe o pacote:
+```
+import { messages } from "joi-translation-pt-br";
+```
+
+- Agora passe o objeto `messages` nas `options` (onde fica o `abortEarly`) do celebrate, ou copie e cole o exemplo abaixo:
+```
+import { Router } from "express";
+import { celebrate, Joi, Segments } from "celebrate";
+import { messages } from "joi-translation-pt-br";
+
+import { HelloWorldController } from "@controllers/HelloWorldController";
+import { ErrorHandlerController } from "@controllers/ErrorHandlerController";
+
+const helloWorld = new HelloWorldController();
+const errorHandler = new ErrorHandlerController();
+
+const router = Router();
+
+router.get("/", helloWorld.index);
+
+router.get("/error", errorHandler.index);
+router.post("/error", celebrate({
+	[Segments.BODY]: Joi.object().keys({
+		name: Joi.string().required(),
+		age: Joi.number().integer().required().min(18),
+	}),
+}, { abortEarly: true, messages }),  errorHandler.create);
+
+export { router };
+```
+
+Agora pode testar que os erros serão retornados em português Brasil. E acesse o [link do projeto de tradução]("https://github.com/EduardoJM/joi-translation-pt-br/") e da uma estrelinha la, é bom dar uma força pra galera! 
+
+OBS: Não esqueça de traduzir os erros que não são do Celebrate!
 
 <br />
