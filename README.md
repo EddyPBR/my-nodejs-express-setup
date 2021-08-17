@@ -981,3 +981,132 @@ I'm not going to delve into docker, but in the following topics I will teach you
 
 <br />
 
+## DOCKER MONGODB AND MONGOOSE
+
+<i>"Mongoose provides a straight-forward, schema-based solution to model your application data. It includes built-in type casting, validation, query building, business logic hooks and more, out of the box."</i>. Summarizing mongoose will help us to create the connection and queries to the mongodb database, so let's start:
+
+- In the root directory create a file called `dockerfile`;
+- Copy and paste the below code snippet into the file:
+```
+FROM node:alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+COPY yarn.lock ./
+
+RUN yarn
+
+COPY . .
+
+EXPOSE 3333
+
+CMD ["yarn", "dev"]
+```
+
+- Now in the root of the project create a file called `docker-compose.yml`;
+- Copy the follwing code snippet and put on the file:
+```
+version: "3.7"
+
+services:
+  server:
+    container_name: express-setup-api
+    restart: always
+    build: .
+    ports:
+      - 3333:${PORT}
+    links:
+      - database
+    volumes:
+      - .:/usr/src/app
+  
+  database:
+    container_name: express-setup-database
+    image: mongo
+    ports:
+      - "27017:27017"
+    logging:
+      driver: none
+```
+
+- To finish the docker config, create a file file called `.dockerignore` and put into the file the following:
+```
+node_modules
+```
+
+Explaining what happens, especially `docker-compose`. The `docker-composer` will start by creating two services the `server` and the `database`, the server will have a container called `express-setup-api` and another one called `express-setup-database`.
+
+The server service will generate the build of a container based on our `dockerfile` file, in our file we specify that a port will be opened on our real machine (PORT `3333`) which will redirect to the PORT of our container ( specified in `.env`) and this service has a dependency on another service which in our case is `database` this means that the two containers will communicate with each other. 
+
+The `database` service, on the other hand, is named `login-system-mongodb` where if something goes wrong it will always restart the service, trying to maintain connection, and here we also redirect the real port to our virtual machine , eventually the database log will be ignored, not showing it in the console.
+
+Now we can run the `docker-compose up` command in our command interface and the two containers will be on!
+
+<br />
+
+Now let's connect our system to mongodb using the mongoose package. Follow the step by step:
+
+- Install the Mongoose package:
+```
+yarn add mongoose
+```
+
+- Add the following variables to your `.env`:
+```
+DB_HOST=database
+DB_PORT=27017
+DB_NAME=express-setup
+```
+
+- Inside the `src` directory create a folder called `database`;
+
+- Inside the `database` folder create a `connection.ts` file and copy and paste the following code snippet:
+```
+import mongoose from "mongoose";
+import { ApplicationException } from "@exceptions/ApplicationException";
+
+const { DB_HOST, DB_PORT, DB_NAME } = process.env;
+
+export const connection = async() => {
+  try {
+    await mongoose.connect(`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      useFindAndModify: true,
+      useCreateIndex: true,
+    });
+
+    console.log(`MONGODB LISTEN AT ${DB_PORT}`);
+  } catch (error) {
+    new ApplicationException(error.message, 500);
+  }
+}
+```
+
+- In the `app.ts` file import the connection file and its function, and execute the function in the line before `export { app }` see example:
+```
+import express from "express";
+import "express-async-errors";
+import { ErrorHandling } from "@middlewares/ErrorHandling";
+import { connection } from "@database/connection";
+
+import { router } from "./routes";
+
+const app = express();
+
+app.use(express.json());
+
+app.use(router);
+
+app.use(ErrorHandling);
+
+connection();
+
+export { app };
+```
+
+- Run the command `docker-compose up` again, in cases of success with the mongodb connection, the connection established message will be displayed on the console.
+
+<br />
