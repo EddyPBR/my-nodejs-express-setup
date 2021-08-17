@@ -66,7 +66,7 @@ In the `tsconfig.json` file, set the following configurations:
     // "sourceMap": true,                           /* Generates corresponding '.map' file. */
     // "outFile": "./",                             /* Concatenate and emit output to single file. */
     "outDir": "./dist",                             /* Redirect output structure to the directory. */
-    "rootDir": "./src",                             /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": ".",                                 /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                           /* Enable project compilation */
     // "tsBuildInfoFile": "./",                     /* Specify file to store incremental compilation information */
     "removeComments": true,                         /* Do not emit comments to output. */
@@ -792,5 +792,79 @@ export { router };
 Agora pode testar que os erros serão retornados em português Brasil. E acesse o [link do projeto de tradução]("https://github.com/EduardoJM/joi-translation-pt-br/") e da uma estrelinha la, é bom dar uma força pra galera! 
 
 OBS: Não esqueça de traduzir os erros que não são do Celebrate!
+
+<br />
+
+## AUTOMATED TESTS WITH JEST
+
+Automated tests are essential for the development of all software, when we run automated tests we find bugs, security holes and unexpected results.
+
+In this topic we are going to install and configure JEST to create automated tests for our project. So here we go:
+
+- Install jest:
+```
+yarn add jest ts-jest @types/jest -D
+```
+
+- Execute the command:
+```
+yarn jest --init
+```
+
+Agora reproduza as seguintes respostas:
+- Would you like to use Jest when running "test" script in "package.json"? `yes`;
+- Would you like to use Typescript for use configuration file? `yes`;
+- Choose the test enviroment that will be use for testing? `node`;
+- Do you want Jest to add coverage reports? `yes`;
+- Which provider should be use to instrument code for coverage? `v8`;
+- Automatically clear mock calls and instances between every test? `yes`;
+
+Jest created the `jest.config.js` file open and do the following:
+
+- Find the variable `preset`, remove the comment change to: 
+```
+preset: "ts-jest"
+```
+
+- Find the variable `testMatch`, remove the comment and change to: 
+```
+testMatch: [
+  "**/__tests__/**/*.ts"
+]
+```
+
+- Em casos de você ter o `eslint` no seu projeto, no arquivo de configuração no atributo `env` adicione o seguinte:
+```
+env {
+  "jest": true,
+}
+```
+
+- Let's create the test script, open the `package.json` file and in the `scripts` attribute add the following script:
+```
+"scripts": {
+  test: "jest"
+}
+```
+
+- To finish in the file `tsconfig.json` add the following code snippet:
+```
+"exclude": ["**/__tests__"]
+```
+
+Everything is set up, now we're finally going to create a test for our system, so let's start:
+
+- First in the root of the project create the directory `__tests__`;
+- Inside the folder create a folder called `unit`;
+- In this folder create a file `example.spec.ts`;
+- And copy the following code snippet:
+```
+describe('Just a test', () => {
+  it('Sum 1 + 1 = 2', () => {
+    expect(1 + 1).toBe(2)
+  })
+});
+```
+- Now execute the command `yarn test`;
 
 <br />
