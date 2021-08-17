@@ -1,6 +1,7 @@
 import express from "express";
 import "express-async-errors";
 import { ErrorHandling } from "@middlewares/ErrorHandling";
+import { connection } from "@database/connection";
 
 import { router } from "./routes";
 
@@ -11,5 +12,7 @@ app.use(express.json());
 app.use(router);
 
 app.use(ErrorHandling);
+
+connection();
 
 export { app };

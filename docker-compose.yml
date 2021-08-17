@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+  server:
+    container_name: express-setup-api
+    restart: always
+    build: .
+    ports:
+      - 3333:${PORT}
+    links:
+      - database
+    volumes:
+      - .:/usr/src/app
+  
+  database:
+    container_name: express-setup-database
+    image: mongo
+    ports:
+      - "27017:27017"
+    logging:
+      driver: none
