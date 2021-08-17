@@ -702,7 +702,7 @@ In the code above, we import celebrate and use its data handling functions. I'm 
 
 - In the `age` field we said that it is a mandatory numeric type field of the integer type (cannot be fractional or decimal) and that it has to be greater then 18;
 
-PS: There are several types of error handling with Joi and celebrate, go to [this link]("https://joi.dev/api/") and learn more.
+PS: There are several types of error handling with Joi and celebrate, go to [this-link]("https://joi.dev/api/") and learn more.
 
 If in any of these cases the data is not satisfied, celebrate will trigger an error, which will be caught by our error middleware created in the previous topic. However the errors will be returned in a generic way, so let's specify the fields that gave an error when we go back to the user.
 
@@ -789,7 +789,7 @@ router.post("/error", celebrate({
 export { router };
 ```
 
-Agora pode testar que os erros serão retornados em português Brasil. E acesse o [link do projeto de tradução]("https://github.com/EduardoJM/joi-translation-pt-br/") e da uma estrelinha la, é bom dar uma força pra galera! 
+Agora pode testar que os erros serão retornados em português Brasil. E acesse o [link-do-projeto-de-tradução]("https://github.com/EduardoJM/joi-translation-pt-br/") e da uma estrelinha la, é bom dar uma força pra galera! 
 
 OBS: Não esqueça de traduzir os erros que não são do Celebrate!
 
