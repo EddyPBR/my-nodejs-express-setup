@@ -968,3 +968,16 @@ describe("check route POST /error", () => {
 So everything is set up for us to create tests and develop with the tdd strategy.
 
 <br />
+
+## DOCKER
+
+When we are developing software there are several situations in which something might work on your machine, but on your colleague's machine it won't work.
+
+This is due to the different operating systems and language or database versions that differ among developers.
+
+And to get around this we use docker, the docker is like a container of virtual applications on your computer, and it will allow us to run node and databases on different systems without version differences and without having to worry about versions divergent and the best part, without having to install the database on our machine!
+
+I'm not going to delve into docker, but in the following topics I will teach you how to use docker with a mongodb database (NoSQL) or a MySQL database (SQL).
+
+<br />
+
