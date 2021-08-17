@@ -18,6 +18,6 @@ router.post("/error", celebrate({
 		name: Joi.string().required(),
 		age: Joi.number().integer().required().min(18),
 	}),
-}, { abortEarly: true, messages }),  errorHandler.create);
+}, { abortEarly: false, messages }),  errorHandler.create);
 
 export { router };

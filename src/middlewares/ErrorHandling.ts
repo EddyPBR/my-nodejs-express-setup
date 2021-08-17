@@ -12,7 +12,7 @@ export function ErrorHandling (
 		const errorDetails = error.details.get("body").details;
 		const errorMessages = errorDetails.map((errorDetail) => errorDetail.message.replace(/"/g, ""));
 
-		return response.status(500).json({
+		return response.status(400).json({
 			message: errorMessages,
 		});
 	}
