@@ -66,7 +66,7 @@ In the `tsconfig.json` file, set the following configurations:
     // "sourceMap": true,                           /* Generates corresponding '.map' file. */
     // "outFile": "./",                             /* Concatenate and emit output to single file. */
     "outDir": "./dist",                             /* Redirect output structure to the directory. */
-    "rootDir": ".",                                 /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": "./src",                                 /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                           /* Enable project compilation */
     // "tsBuildInfoFile": "./",                     /* Specify file to store incremental compilation information */
     "removeComments": true,                         /* Do not emit comments to output. */
@@ -724,7 +724,7 @@ export function ErrorHandling (
     const errorDetails = error.details.get("body").details;
     const errorMessages = errorDetails.map((errorDetail) => errorDetail.message.replace(/"/g, ""));
 
-    return response.status(500).json({
+    return response.status(400).json({
       message: errorMessages,
     });
   }
@@ -829,7 +829,31 @@ preset: "ts-jest"
 - Find the variable `testMatch`, remove the comment and change to: 
 ```
 testMatch: [
-  "**/__tests__/**/*.ts"
+  "**/__tests__/**/*.spec.ts"
+]
+```
+
+- Lets enable decorators, find the variable `moduleNameMapper`, remove the comment and change to:
+```
+moduleNameMapper: {
+  "@controllers/(.*)": "<rootDir>/src/controllers/$1",
+  "@models/(.*)": "<rootDir>/src/models/$1",
+  "@utils/(.*)": "<rootDir>/src/utils/$1",
+  "@middlewares/(.*)": "<rootDir>/src/middlewares/$1",
+  "@database/(.*)": "<rootDir>/src/database/$1",
+  "@exceptions/(.*)": "<rootDir>/src/exceptions/$1",
+}
+```
+
+- Choose the root directory, find the variable `rootDir`, remove the comment and change to:
+```
+rootDir: "."
+```
+
+- Habilitando o root, find the variable `roots`, remove the comment and change to:
+```
+roots: [
+  "<rootDir>"
 ]
 ```
 
@@ -866,5 +890,81 @@ describe('Just a test', () => {
 });
 ```
 - Now execute the command `yarn test`;
+
+<br />
+
+## AUTOMATED TESTS OF ROUTES WITH SUPERTEST
+
+In the previous topic we created unit tests using jest, now let's create route tests using supertest.
+
+The supertest creates requests to our server, with this we can test the experience of the system working really and without isolation depending on the cases.
+
+The process is much simpler than just installing jest, but in this topic we will create a route test using the routes created in the `error handling` topic. So let's start:
+
+- Install supertest:
+```
+yarn add supertest @types/supertest -D
+```
+
+- Inside the `__tests__` directory create a folder called `integration`;
+
+- In the `integration` folder create a file called `errorHandler.spec.ts`;
+
+- Inside the `errorHandler.spec.ts` copy the follwing code snippet:
+```
+import request from "supertest";
+import { app } from "../../src/app";
+
+
+describe("check route GET /error", () => {
+  it("should be a success", async () => {
+    const response = await request(app).get("/error");
+
+    expect(response.status).toBe(200);
+  });
+});
+
+describe("check route POST /error", () => {
+  it("should be fail because name and age validation", async () => {
+    const response = await request(app).post("/error").send({
+      name: "eddypbr",
+      age: 17
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should be fail because age validation", async () => {
+    const response = await request(app).post("/error").send({
+      name: "irineu",
+      age: 17
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should be fail because name already registered", async () => {
+    const response = await request(app).post("/error").send({
+      name: "edvaldo",
+      age: 24
+    });
+
+    expect(response.status).toBe(400);
+  });
+
+  it("should be a success", async () => {
+    const response = await request(app).post("/error").send({
+      name: "irineu",
+      age: 24
+    });
+
+    expect(response.status).toBe(202);
+  });
+});
+```
+
+- Execute the command `yarn test` and see the result of the tests;
+
+So everything is set up for us to create tests and develop with the tdd strategy.
 
 <br />
