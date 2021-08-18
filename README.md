@@ -66,7 +66,7 @@ In the `tsconfig.json` file, set the following configurations:
     // "sourceMap": true,                           /* Generates corresponding '.map' file. */
     // "outFile": "./",                             /* Concatenate and emit output to single file. */
     "outDir": "./dist",                             /* Redirect output structure to the directory. */
-    "rootDir": "./src",                                 /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
+    "rootDir": ".",                                 /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
     // "composite": true,                           /* Enable project compilation */
     // "tsBuildInfoFile": "./",                     /* Specify file to store incremental compilation information */
     "removeComments": true,                         /* Do not emit comments to output. */
@@ -702,7 +702,7 @@ In the code above, we import celebrate and use its data handling functions. I'm 
 
 - In the `age` field we said that it is a mandatory numeric type field of the integer type (cannot be fractional or decimal) and that it has to be greater then 18;
 
-PS: There are several types of error handling with Joi and celebrate, go to [this-link]("https://joi.dev/api/") and learn more.
+PS: There are several types of error handling with Joi and celebrate, go to [this-link](https://joi.dev/api/) and learn more.
 
 If in any of these cases the data is not satisfied, celebrate will trigger an error, which will be caught by our error middleware created in the previous topic. However the errors will be returned in a generic way, so let's specify the fields that gave an error when we go back to the user.
 
@@ -789,7 +789,7 @@ router.post("/error", celebrate({
 export { router };
 ```
 
-Agora pode testar que os erros serão retornados em português Brasil. E acesse o [link-do-projeto-de-tradução]("https://github.com/EduardoJM/joi-translation-pt-br/") e da uma estrelinha la, é bom dar uma força pra galera! 
+Agora pode testar que os erros serão retornados em português Brasil. E acesse o [link-do-projeto-de-tradução](https://github.com/EduardoJM/joi-translation-pt-br/) e da uma estrelinha la, é bom dar uma força pra galera! 
 
 OBS: Não esqueça de traduzir os erros que não são do Celebrate!
 
@@ -966,5 +966,19 @@ describe("check route POST /error", () => {
 - Execute the command `yarn test` and see the result of the tests;
 
 So everything is set up for us to create tests and develop with the tdd strategy.
+
+<br />
+
+## DOCKER
+
+When we are developing software there are several situations in which something might work on your machine, but on your colleague's machine it won't work.
+
+This is due to the different operating systems and language or database versions that differ among developers.
+
+And to get around this we use docker, the docker is like a container of virtual applications on your computer, and it will allow us to run node and databases on different systems without version differences and without having to worry about versions divergent and the best part, without having to install the database on our machine!
+
+I'm not going to delve into docker, but but in the following topics I will teach you how to use docker with a mongodb database (NoSQL) or a MySQL database (SQL).
+
+You can access the [mongodb](https://github.com/EddyPBR/my-nodejs-express-setup/tree/setup-with-mongoose) brench or the [mysql](https://github.com/EddyPBR/my-nodejs-express-setup/tree/setup-with-mysql) brench to find out how to set up the docker for these two databases.
 
 <br />
