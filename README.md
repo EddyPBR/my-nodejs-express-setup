@@ -459,20 +459,32 @@ Now we need finish the configuration of Eslint and Prettier, just follow the ste
 
 - Now let's create a `.eslintignore` to don't apply the rules in some files:
 ```
-  **/node_modules/*
-  **/out/*
-  **/dist/*
-  tsconfig.json
-  package.json
+**/node_modules/*
+**/out/*
+**/dist/*
+tsconfig.json
+package.json
+.eslintrc.json
+.prettierrc.json5
+dockerfile
+*.yml
+*.lock
+*.config
 ```
 
 - Now lest do the same thing with the prettier, create a `.prettierignore` file and copy the following:
 ```
-  node_modules
-  dist
-  yarn.lock
-  package-lock.json
-  public
+**/node_modules/*
+**/out/*
+**/dist/*
+tsconfig.json
+package.json
+.eslintrc.json
+.prettierrc.json5
+dockerfile
+*.yml
+*.lock
+*.config
 ```
 
 - To finisg this topic, lets create a script to linting our files. In `package.json` file in the `scripts` atribute put this code:
