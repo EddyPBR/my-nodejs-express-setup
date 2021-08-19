@@ -405,38 +405,46 @@ Finished it, the npm will download a series of packages even if you use `yarn`, 
 ```
 
 Now we need finish the configuration of Eslint and Prettier, just follow the steps:
-- In `.eslintrc` file copy the following code snippet:
+- In `.eslintrc.json` file copy the following code snippet:
 ```
-  {
-    "env": {
-      "es2021": true,
-      "node": true
-    },
-    "extends": [
-      "airbnb-base",
-      "prettier"
-    ],
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 14,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "@typescript-eslint",
-      "prettier"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        1,
-        {
-          "trailingComma": "es5",
-          "singleQuote": false,
-          "semi": true
-        }
-      ],
-      "no-console": 0
-    }
-  }
+{
+	"env": {
+		"es2021": true,
+		"node": true,
+		"jest": true
+	},
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended"
+	],
+	"parser": "@typescript-eslint/parser",
+	"parserOptions": {
+		"ecmaVersion": 14,
+		"sourceType": "module"
+	},
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"rules": {
+		"indent": [
+			"error",
+			"tab"
+		],
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
+		"quotes": [
+			"error",
+			"double"
+		],
+		"semi": [
+			"error",
+			"always"
+		],
+		"@typescript-eslint/explicit-module-boundary-types": "off" // desactive force return types on functions
+	}
+}
 ```
 
 - On the root folder create a file `.prettierrc.json` and copy the follwing code snippet:
