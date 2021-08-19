@@ -90,7 +90,7 @@ In the `tsconfig.json` file, set the following configurations:
 
     /* Basic Options */
     // "incremental": true,                         /* Enable incremental compilation */
-  "target": "ES2021",                               /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */
+  	"target": "ES2021",                             /* Specify ECMAScript target version: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', 'ES2021', or 'ESNEXT'. */
     "module": "commonjs",                           /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */
     // "lib": [],                                   /* Specify library files to be included in the compilation. */
     "allowJs": true,                                /* Allow javascript files to be compiled. */
@@ -111,7 +111,7 @@ In the `tsconfig.json` file, set the following configurations:
     // "isolatedModules": true,                     /* Transpile each file as a separate module (similar to 'ts.transpileModule'). */
 
     /* Strict Type-Checking Options */
-    "strict": false,                                 /* Enable all strict type-checking options. */
+    "strict": false,                                /* Enable all strict type-checking options. */
     // "noImplicitAny": true,                       /* Raise error on expressions and declarations with an implied 'any' type. */
     // "strictNullChecks": true,                    /* Enable strict null checks. */
     // "strictFunctionTypes": true,                 /* Enable strict checking of function types. */
@@ -131,7 +131,7 @@ In the `tsconfig.json` file, set the following configurations:
 
     /* Module Resolution Options */
     // "moduleResolution": "node",                  /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */
-    "baseUrl": "./",                                /* Base directory to resolve non-absolute module names. */
+    "baseUrl": ".",                                 /* Base directory to resolve non-absolute module names. */
     "paths": {
       "@controllers/*": [
         "./src/controllers/*"
@@ -282,7 +282,7 @@ In this topic we are going to configure our project to generate the build with t
   yarn add babel-plugin-module-resolver @babel/preset-typescript @babel/preset-env @babel/node @babel/core @babel/cli -D
 ```
 
-- Now let's create a babel configuration file:
+- Now let's create a babel configuration file called `.babelrc` on root directory:
 ```
   {
     "presets": [
@@ -380,7 +380,7 @@ yarn add eslint prettier eslint-config-prettier eslint-plugin-prettier eslint-pl
 
 - Execute the command:
 ```
-yarn eslint --initialization
+yarn eslint --init
 ```
 
 Now we need response some questions to create our own pattern. Here I will demonstrate the answers to the way this project is found:
