@@ -20,7 +20,10 @@
           "@utils": "./src/utils",
           "@middlewares": "./src/middlewares",
           "@database": "./src/database",
-          "@exceptions": "./src/exceptions"
+          "@exceptions": "./src/exceptions",
+          "@entities": "./src/entities",
+          "@repositories": "./src/repositories",
+          "@services": "./src/services"
         }
       }
     ]

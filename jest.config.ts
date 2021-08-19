@@ -88,6 +88,9 @@ export default {
     "@middlewares/(.*)": "<rootDir>/src/middlewares/$1",
     "@database/(.*)": "<rootDir>/src/database/$1",
     "@exceptions/(.*)": "<rootDir>/src/exceptions/$1",
+    "@repositories/(.*)": "<rootDir>/src/repositories/$1",
+    "@entities/(.*)": "<rootDir>/src/entities/$1",
+    "@services/(.*)": "<rootDir>/src/services/$1",
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader

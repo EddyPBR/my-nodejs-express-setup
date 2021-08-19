@@ -982,3 +982,487 @@ I'm not going to delve into docker, but but in the following topics I will teach
 You can access the [mongodb](https://github.com/EddyPBR/my-nodejs-express-setup/tree/setup-with-mongoose) brench or the [mysql](https://github.com/EddyPBR/my-nodejs-express-setup/tree/setup-with-mysql) brench to find out how to set up the docker for these two databases.
 
 <br />
+
+## DOCKER MYSQL AND TYPEORM
+
+Creating code that generates an optimized and secure query that works on a mysql and postgree database without having to change anything seems like a dream, but the typeorm is real!
+
+The typeorm has compatibility with a lot of databases, and in a project with the use of decorators and typescript with the typeorm it looks really cool, so let's use the typeorm.
+
+Let's get started, just follow the steps below:
+
+- In the root directory create a file called `dockerfile`;
+- Copy and paste the below code snippet into the file:
+```
+FROM node:alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+COPY yarn.lock ./
+
+RUN yarn
+
+COPY . .
+
+EXPOSE 3333
+
+CMD ["yarn", "dev"]
+```
+
+- Now in the root of the project create a file called `docker-compose.yml`;
+- Copy the following code snippet and put on the file:
+version: "3.7"
+
+services:
+  server:
+    container_name: express-setup-api
+    restart: always
+    build: .
+    ports:
+      - 3333:${PORT}
+    links:
+      - database
+    volumes:
+      - .:/usr/src/app
+  
+  database:
+    container_name: express-setup-database
+    image: mysql:5.7.31
+    command: --default-authentication-plugin=mysql_native_password --sql_mode=NO_ENGINE_SUBSTITUTION,NO_AUTO_CREATE_USER --explicit_defaults_for_timestamp
+    restart: always
+    ports:
+      - 3306:${DATABASE_PORT}
+    logging:
+      driver: none
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+
+- To finish the docker config, create a file file called `.dockerignore` and put into the file the following:
+```
+node_modules
+```
+
+- Before you create the containers, you need to be update the `.env` file, just add the following code snippet:
+```
+DATABASE_NAME=express-setup-database
+DATABASE_USER=setup-user
+DATABASE_PASSWORD=qwerty123
+DATABASE_PORT=3306
+```
+
+PS: You can change the vars name in the `.env` file, but don't change environment vars in `docker-compose` file!!!!
+
+Explaining what happens, especially `docker-compose`. The `docker-composer` will start by creating two services the `server` and the `database`, the server will have a container called `express-setup-api` and another one called `express-setup-database`.
+
+The server service will generate the build of a container based on our `dockerfile` file, in our file we specify that a port will be opened on our real machine (PORT `3333`) which will redirect to the PORT of our container ( specified in `.env`) and this service has a dependency on another service which in our case is `database` this means that the two containers will communicate with each other. 
+
+The `database` service, on the other hand, is named `express-setup-database` where if something goes wrong it will always restart the service, trying to maintain connection, and here we also redirect the real port to our virtual machine , eventually the database log will be ignored, not showing it in the console.
+
+Now we can run the `docker-compose up` command in our command interface and the two containers will be on!
+
+<br />
+
+Now let's connect our system to mysql using the typeorm package. Follow the step by step:
+
+- Install mysql package:
+```
+yarn add mysql
+```
+
+- Install the typeorm package:
+```
+yarn add typeorm
+```
+
+- On the `root` directory create a file called `ormconfig.js` (host: database -> name of the docker-compose database service);
+```
+module.exports = {
+  "type": "mysql",
+  "host": "database",
+  "port": process.env.DATABASE_PORT,
+  "username": process.env.DATABASE_USER,
+  "password": process.env.DATABASE_PASSWORD,
+  "database": process.env.DATABASE_NAME,
+  "entities": ["src/entities/*.ts"],
+  "migrations": ["src/database/migrations/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entities",
+    "migrationsDir": "src/database/migrations",
+  }
+};
+```
+
+- On the `root` directory create a file called `ormMigrationConfig.js`;
+```
+module.exports = {
+  "type": "mysql",
+  "host": "localhost",
+  "port": process.env.DATABASE_PORT,
+  "username": process.env.DATABASE_USER,
+  "password": process.env.DATABASE_PASSWORD,
+  "database": process.env.DATABASE_NAME,
+  "entities": ["src/entities/*.ts"],
+  "migrations": ["src/database/migrations/*.ts"],
+  "cli": {
+    "entitiesDir": "src/entities",
+    "migrationsDir": "src/database/migrations",
+  }
+};
+```
+
+- Yes is the same file, but we need create it because the docker host... just confide in me.
+
+- The typeorm needs a another package, so install it:
+```
+yarn add reflect-metadata
+```
+
+- In `src` directory create a folder called `database`;
+- On database folder create a file `connection.ts`, and copy the following code:
+```
+import { createConnection, getConnection } from "typeorm";
+
+export const connection = {
+  async create() {
+    await createConnection();
+  },
+
+  async close(){
+    await getConnection().close(); 
+  }
+};
+```
+
+- And update the `app.ts` file, lets call the `connection function` and `reflect-metadata`, just copy the followinf code:
+```
+import "reflect-metadata";
+import express from "express";
+import "express-async-errors";
+import { ErrorHandling } from "@middlewares/ErrorHandling";
+import { connection } from "@database/connection";
+
+import { router } from "./routes";
+
+const app = express();
+
+app.use(express.json());
+
+app.use(router);
+
+app.use(ErrorHandling);
+
+connection();
+
+export { app };
+```
+
+With that our docker node is already communicating with the database. From this moment run the command `docker-compose up` and leave it running in the terminal, open another terminal and go to the next topic.
+
+## TYPEORM, STRUCTURE AND EXAMPLE OF USE
+
+Now let's create an example of a route that creates a user using typeorm.
+
+PS: Before start we need to add the decorators of three new folders. the folders are: `services`, `entities` and `repositories`. So remember that there are three places to configure decorators in `tsconfig.json`, `babelrc` and `jest.config.ts`. Just take as an example the codes of decorators already created in these files.
+
+With the decorators ready, let's move on. just follow the steps:
+
+- In `package.json` file add the following scripts in the `scripts` object:
+```
+"typeorm": "ts-node-dev ./node_modules/typeorm/cli.js",
+"migration": "ts-node-dev ./node_modules/typeorm/cli.js migration:run -f ormMigrationConfig.js"
+```
+
+- Well lets create the first migration, execute the following command:
+```
+yarn typeorm migration:create -n CreateUsers
+```
+
+- In folder `database/migrations` a file has been created, insert (NOT SUBSCRIBE ANY ROW OF CODE) the lefting informations:
+```
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
+
+export class CreateUsers1629305967416 implements MigrationInterface {
+
+  public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.createTable(
+      new Table({
+        name: "users",
+        columns: [
+          {
+            name: "id",
+            type: "varchar",
+            isPrimary: true,
+          },
+          {
+            name: "name",
+            type: "varchar",
+          },
+          {
+            name: "email",
+            type: "varchar",
+          },
+        ],
+      })
+    );
+  }
+
+  public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.dropTable("users");
+  }
+
+}
+```
+
+- Now let's make our first migration, this will create our user table in the database, just execute:
+```
+yarn migration
+```
+
+- With the tables created, let's create our first `entity`:
+```
+yarn typeorm entity:create -n UserEntitiy
+```
+
+- In directory `src` in the folder `entities` has been creted the file `UserEntity.ts`, so copy the following code snippet:
+```
+import { Entity, PrimaryColumn, Column } from "typeorm";
+import { v4 as uuid } from "uuid";
+
+@Entity("users")
+class UserEntity {
+  
+  @PrimaryColumn()
+  readonly id: string;
+
+  @Column()
+  name: string;
+
+  @Column()
+  email: string;
+
+  constructor() {
+    if(!this.id) {
+      this.id = uuid();
+    }
+  }
+
+};
+
+export { UserEntity };
+```
+
+- Now we need to install the `uuid` package, Install the package with the command below, which I'll explain next.
+```
+yarn add uuid
+```
+
+- And install the types:
+```
+yarn add @types/uuid -D
+```
+
+`UUID` is a library that generates `unique and universal ID's`, some databases have this native function, but some databases do not have this function or the way they create this uuid is different (due to the uuid versions), so we can get around this , we added this library and we guarantee that the uuid will be generated by the javascript code and added to any database.
+
+- In `src` directory create a folder `repositories`;
+- In `respositories` folder create a file `UserRepository.ts`, and copy the following code snippet:
+```
+import { EntityRepository, Repository } from "typeorm";
+import { UserEntity } from "@entities/UserEntity";
+
+@EntityRepository(UserEntity)
+class UserRepository extends Repository<UserEntity> {}
+
+export { UserRepository };
+```
+
+- In `src` directory create a folder `services`;
+- In `services` folder create a file `CreateUserService.ts`, and copy the following code snippet:
+```
+import { getCustomRepository } from "typeorm";
+import { UserRepository } from "@repositories/UserRepository";
+import { ApplicationException } from "@exceptions/ApplicationException";
+
+interface IUserRequest {
+  name: string;
+  email: string;
+}
+
+class CreateUserService {
+  async execute({ name, email }: IUserRequest) {
+    const usersRepository = getCustomRepository(UserRepository);
+
+    if (!name || !email) {
+      throw new ApplicationException("Email or password with bad formated", 400);
+    }
+
+    const userAlreadyExists = await usersRepository.findOne({
+      email
+    });
+
+    if (userAlreadyExists) {
+      throw new ApplicationException("User already registered", 403);
+    }
+
+    const user = usersRepository.create({
+      name,
+      email
+    });
+
+    await usersRepository.save(user);
+
+    return user;
+  }
+}
+
+export { CreateUserService };
+```
+
+- In the `controllers` directory remove delete all files;
+- In the `routes.ts` file remove all routes, and remove all imports from controllers;
+
+- Now in the `controllers` folder create a `UserController.ts` file and copy the following code snippet:
+```
+import { Request, Response } from "express";
+import { CreateUserService } from "@services/CreateUserService";
+
+type UserRequestBody = {
+  email: string;
+  name: string;
+}
+
+class UserController {
+	async create(request: Request, response: Response) {
+    const { name, email }: UserRequestBody = request.body;
+
+    const createUserService = new CreateUserService();
+
+    const user = await createUserService.execute({ name, email });
+
+    return response.json(user);
+  }
+}
+
+export { UserController };
+```
+
+- In the `routes.ts` file copy the following code snippet: 
+```
+import { Router } from "express";
+import { celebrate, Joi, Segments } from "celebrate";
+
+import { UserController } from "@controllers/UserController";
+
+const userController = new UserController();
+
+const router = Router();
+
+router.post("/user", celebrate({
+	[Segments.BODY]: Joi.object().keys({
+		email: Joi.string().email().required(),
+		name: Joi.string().required()
+	}),
+}, { abortEarly: true }), userController.create);
+
+export { router };
+```
+
+Now you can test the route.
+
+<br />
+
+## TESTS CONFIGURATIONS
+
+Before we start our tests, we will have to create another database using the docker and this database is just for us to perform tests.
+
+- If you are running the `docker-compose up` command, stop it now;
+- Then in the `root` directory create a `docker-compose.test.yml` file;
+- Copy the following code snippet and paste into the created file:
+```
+version: "3.7"
+
+services:  
+  test-database:
+    container_name: test-mysql
+    image: mysql:5.7.31
+    command: --default-authentication-plugin=mysql_native_password --sql_mode=NO_ENGINE_SUBSTITUTION,NO_AUTO_CREATE_USER --explicit_defaults_for_timestamp
+    restart: always
+    ports:
+      - 3306:${DATABASE_PORT}
+    logging:
+      driver: none
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=${DATABASE_NAME}
+      - MYSQL_USER=${DATABASE_USER}
+      - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+```
+
+- Add the following script to `package.json`:
+```
+"docker-database-test": "docker-compose -f docker-compose.test.yml up"
+```
+
+- Execute the command:
+```
+yarn docker-database-test
+```
+
+- Now let's create our tables, execute the command:
+```
+yarn migration
+```
+
+- Well let's create our test file.
+- In the `__test__` directory, delete the files from the `integrations` folder;
+- Inside the `integrations` folder create the `user.spec.ts` file. And copy the following code snippet:
+```
+import request from "supertest";
+import { getCustomRepository } from "typeorm";
+
+import { app } from "../../src/app";
+import { connection } from "@database/connection";
+import { UserRepository } from "@repositories/UserRepository";
+
+describe("Test user route", () => {
+  beforeAll(async () => {
+    await connection.create();
+  });
+  
+  afterAll(async () => {
+    await connection.close();
+  });
+  
+  beforeEach(async () => {
+    const usersRepository = getCustomRepository(UserRepository);
+    await usersRepository.clear();
+  });
+
+  it("should be create and save a user", async () => {
+    const response = await request(app).post("/user").send({
+      email: "newuser@mail.com",
+      name: "newuser"
+    });
+
+    expect(response.status).toBe(200);
+  });
+});
+```
+
+`WARNING: Every time we run the tests, we have to change the "ormconfig.js" file and set the host to "localhost"! as I'll show you next.`
+
+- In the `ormconfig` file set the attribute:
+```
+host: localhost
+```
+
+- Now run the tests:
+```
+yarn test
+```
+
+<br />
