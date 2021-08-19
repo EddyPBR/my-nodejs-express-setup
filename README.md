@@ -1,4 +1,39 @@
-## INITIALIZE PACKAGE.JSON AND TYPESCRIPT
+<p align="center">
+	<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/Node.js_logo.svg/1280px-Node.js_logo.svg.png" alt="nodejs-express" width="400" />
+	<br />
+	<h1 align="center">EXPRESS SETUP</h1>
+</p>
+
+<br />
+<br />
+
+This is my API's development setup using nodejs-express library with typescript. Here you will see integration with decorators, docker, commit patterns and code organization patterns, docker and more. 
+
+I hope it will be useful for you to save time in your projects!
+
+<br />
+
+## SUMMARY
+
+- [INITIALIZE](#initialize)
+- [DECORATORS](#decorators)
+- [STRUCTURE](#structure)
+- [SCRIPTS BUILD AND START](#script-build-and-start)
+- [AMBIENT VARS](#ambient-vars)
+- [ESLINT AND PRETTIER](#eslint-and-prettier)
+- [EDITOR CONFIG](#editor-config)
+- [STANDARDIZE COMMITS](#standardize-commits)
+- [ERROR HANDLING](#error-handling)
+- [CELEBRATE AND JOI](#celebrate-and-joi)
+- [CELEBRATE TRANSLATE PT-BR](#celebrate-translate)
+- [AUTOMATED TETS](#automated-tests)
+- [TESTS-IN-ROUTES](#tests-in-routes)
+- [DOCKER](#docker)
+
+
+<br />
+
+## INITIALIZE PACKAGE.JSON AND TYPESCRIPT <a name="initialize"></a>
 
 First create your project directory, inside your project directory execute the following commands:
 
@@ -43,7 +78,7 @@ Let's remove unnecessary git changes. To do this, create a `.gitignore` file in 
 
 <br />
 
-## PATHS DECORATORS
+## PATHS DECORATORS <a name="decorators"></a>
 
 Do you know when you need to access a certain file inside a folder, and we have to type 4x the `../` just to get to the folder where the file is? - So the decorators of paths compose to help you.
 
@@ -154,7 +189,7 @@ But we don't stop there, we still need to add the package that allows the typesc
 
 <br />
 
-## EXPRESS BASE STRUCTURE
+## EXPRESS BASE STRUCTURE <a name="structure"></a>
 
 - Install express:
 ```
@@ -238,7 +273,7 @@ So execute in your terminal the command `yarn dev`, and our service is online! W
 
 <br />
 
-## SCRIPT TO BUILD AND START
+## SCRIPT TO BUILD AND START <a name="script-build-and-start"></a>
 
 In this topic we are going to configure our project to generate the build with the babel package.
 
@@ -298,7 +333,7 @@ Well now we have three scripts:
 
 <br />
 
-## DOTENV (AMBIENT VARS)
+## DOTENV (AMBIENT VARS) <a name="ambient-vars"></a>
 
 Sometimes we need to define certain variables in certain environments. You ask yourself, "What do you mean? What environments?" - Project environments, for example the test environment and the production environment.
 
@@ -332,7 +367,7 @@ Explanation: in the copied code snippet, we first import the `dotenv` (.env) fil
 
 <br />
 
-## ESLINT AND PRETTIER
+## ESLINT AND PRETTIER <a name="eslint-and-prettier"></a>
 
 In projects, we must maintain the same code structure pattern, in order to improve the understanding of the team and facilitate changes and the like.
 
@@ -441,7 +476,7 @@ All is configured, so... execute in your terminal the command `yarn lint` and se
 
 <br />
 
-## EDITOR CONFIG
+## EDITOR CONFIG <a name="editor-config"></a>
 
 Editor config is used to maintain a certain pattern of indentation, charset and other text editing settings, just create a `.editorconfig` file and copy and paste the following code snippet:
 
@@ -459,7 +494,7 @@ Editor config is used to maintain a certain pattern of indentation, charset and 
 
 <br />
 
-## STANDARDIZE COMMITS
+## STANDARDIZE COMMITS <a name="standardize-commits"></a>
 
 When working on projects that involve a team, a series of code standardization is recommended, but the standardization of commits also helps the team a lot.
 
@@ -521,7 +556,7 @@ For this we will use commitizen. Open your command interface and run the followi
 
 <br />
 
-## ERROR HANDLING
+## ERROR HANDLING <a name="error-handling"></a>
 
 The handling of errors in the system is something trivial, we don't want our application to simply stop because of errors, and we also want to be aware of the errors we receive.
 
@@ -657,7 +692,7 @@ export { router };
 
 <br />
 
-## ERROR HANDLING WITH CELEBRATE + JOI
+## ERROR HANDLING WITH CELEBRATE + JOI <a name="celebrate-and-joi"></a>
 
 In the previous topic it was shown how to throw system errors and return them as json and assign an http code for each error.
 
@@ -746,7 +781,7 @@ PS: In the routes file the `abortEarly` option is used so that as soon as it fin
 
 <br />
 
-## TRADUÇÃO DO JOI EM PT-BR
+## TRADUÇÃO DO JOI EM PT-BR <a name="celebrate-translate"></a>
 
 Fala dev! achou que ia ficar de fora com os erros brasileiros? - errou!
 
@@ -795,7 +830,7 @@ OBS: Não esqueça de traduzir os erros que não são do Celebrate!
 
 <br />
 
-## AUTOMATED TESTS WITH JEST
+## AUTOMATED TESTS WITH JEST <a name="automated-tests"></a>
 
 Automated tests are essential for the development of all software, when we run automated tests we find bugs, security holes and unexpected results.
 
@@ -893,7 +928,7 @@ describe('Just a test', () => {
 
 <br />
 
-## AUTOMATED TESTS OF ROUTES WITH SUPERTEST
+## AUTOMATED TESTS OF ROUTES WITH SUPERTEST <a name="tests-in-routes"></a>
 
 In the previous topic we created unit tests using jest, now let's create route tests using supertest.
 
@@ -969,7 +1004,7 @@ So everything is set up for us to create tests and develop with the tdd strategy
 
 <br />
 
-## DOCKER
+## DOCKER <a name="docker"></a>
 
 When we are developing software there are several situations in which something might work on your machine, but on your colleague's machine it won't work.
 
